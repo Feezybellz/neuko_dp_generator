@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://neukoai.feezybellz.me/dp/image.png"
+    />
+
+    <title>G*BOY Operative Identity Card Builder</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <meta
+      name="description"
+      content="G*BOY Operative Identity Card Builder: Create and download your custom hacker profile picture with Operative Type and Number."
+    />
+    <meta name="keywords" content="G*BOY, DP, OPERATIVE ID Card, Operative" />
+    <meta name="author" content="That Chill Guy" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+
+    <meta property="og:title" content="G*BOY Operative Identity Card Builder" />
+    <meta
+      property="og:description"
+      content="Create and download your OPERATIVE ID."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://neukoai.feezybellz.me/dp/" />
+    <meta
+      property="og:image"
+      content="https://neukoai.feezybellz.me/dp/image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@feezybellz_ii" />
+    <meta name="twitter:creator" content="@feezybellz_ii" />
+    <meta
+      name="twitter:title"
+      content="G*BOY Operative Identity Card Builder"
+    />
+    <meta
+      name="twitter:description"
+      content="Create and download your custom hacker profile picture with Operative Type and Number."
+    />
+    <meta
+      name="twitter:image"
+      content="https://neukoai.feezybellz.me/dp/image.png"
+    />
+
+    <style>
+      @font-face {
+        font-family: "Digital";
+        src: url("https://fonts.gstatic.com/s/vt323/v15/pxiKyp4fG-ZrgT5rJ2YpAw.woff2")
+          format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      /* Basic styling */
+      body {
+        background-color: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: "Digital", monospace;
+        color: white;
+        padding: 20px;
+      }
+
+      /* Style for the operative text inside the image (Simplified for JS control) */
+      #operative-info {
+        width: 80%;
+        text-align: center;
+        font-size: 0.5rem;
+
+        color: #fff;
+        letter-spacing: 1.5px;
+        text-shadow: 0 0 5px #ff0000;
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 20;
+      }
+      @media (min-width: 640px) {
+        #operative-info {
+          font-size: 0.8rem;
+        }
+      }
+      /* IMPORTANT: Do not set absolute positioning in the CSS here anymore. */
+
+      /* Style the icon buttons */
+      .operative-icon {
+        cursor: pointer;
+        transition: transform 0.1s;
+        font-size: 1.5rem;
+      }
+      .operative-icon:hover {
+        transform: scale(1.1);
+      }
+      .operative-icon.selected {
+        outline: 3px solid #ffff00;
+        outline-offset: 3px;
+        border-radius: 50%;
+      }
+
+      /* Style for the image in the card (The DP) (User's specific positioning preserved) */
+      #operative-dp {
+        position: absolute;
+        top: 43.5%; /* PRESERVED */
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 45%;
+        padding-top: 45%;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        background-color: #000;
+        overflow: hidden;
+        z-index: 1;
+      }
+      #id-card-image {
+        position: relative;
+        z-index: 2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      class="flex flex-col lg:flex-row items-center justify-center gap-8 p-4 max-w-4xl mx-auto"
+    >
+      <div class="w-full max-w-sm sm:w-80 lg:w-96">
+        <div id="id-card-container" class="relative">
+          <img
+            id="id-card-image"
+            src="image.png"
+            alt="G*BOY Operative Identity Card"
+            class="w-full h-auto"
+          />
+
+          <div id="operative-dp"></div>
+
+          <div id="operative-info">OPERATIVE</div>
+        </div>
+        <button
+          id="download-button"
+          class="w-full py-3 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded-md transition duration-150 shadow-lg mt-4"
+        >
+          📥 DOWNLOAD OPERATIVE CARD
+        </button>
+      </div>
+
+      <div
+        class="bg-gray-800 p-6 rounded-lg shadow-xl border-2 border-red-600 w-full max-w-sm"
+      >
+        <h2
+          class="text-2xl font-bold mb-4 text-yellow-400 border-b pb-2 border-red-600"
+        >
+          Generate ID Card
+        </h2>
+
+        <div class="mb-6 border-b pb-4 border-gray-700">
+          <label class="block text-lg font-bold mb-3 text-red-400"
+            >👤 Hooded PFP</label
+          >
+
+          <div>
+            <label for="image-upload" class="block text-sm font-medium mb-2"
+              >Upload Hooded PFP:</label
+            >
+
+            <input
+              type="file"
+              id="image-upload"
+              accept="image/*"
+              class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <div id="tab-selector" class="flex justify-center mb-6">
+          <button
+            id="tab-default"
+            data-tab="default"
+            class="tab-button px-4 py-2 border-r rounded-l-md font-bold transition duration-150 bg-red-600 hover:bg-red-700 text-white shadow-md"
+          >
+            Default Operative
+          </button>
+          <button
+            id="tab-custom"
+            data-tab="custom"
+            class="tab-button px-4 py-2 rounded-r-md font-bold transition duration-150 bg-gray-700 hover:bg-gray-600 text-gray-300 shadow-md"
+          >
+            Custom Text
+          </button>
+        </div>
+
+        <div id="tab-content">
+          <div id="default-options" class="tab-pane">
+            <div class="mb-6">
+              <label class="block text-sm font-medium mb-2"
+                >Select Operative Type:</label
+              >
+              <div
+                class="flex space-x-4 justify-around p-3 bg-gray-900 rounded-md"
+              >
+                <div
+                  id="icon-rabbit"
+                  data-type="🐰"
+                  class="operative-icon p-2 selected"
+                >
+                  🐰
+                </div>
+                <div id="icon-bug" data-type="🐝" class="operative-icon p-2">
+                  🐝
+                </div>
+                <div id="icon-snake" data-type="🐍" class="operative-icon p-2">
+                  🐍
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-6">
+              <label
+                for="operative-number"
+                class="block text-sm font-medium mb-2"
+                >Enter Operative Number (Max 6 digits):</label
+              >
+              <input
+                type="text"
+                id="operative-number"
+                maxlength="6"
+                class="w-full p-3 bg-gray-900 text-yellow-400 border border-red-600 rounded-md focus:ring-yellow-400 focus:border-yellow-400 text-xl tracking-widest"
+                placeholder="007"
+              />
+            </div>
+          </div>
+
+          <div id="custom-options" class="tab-pane hidden">
+            <div class="mb-6">
+              <label
+                for="custom-text"
+                class="block text-lg font-bold mb-3 text-red-400"
+              >
+                ✏️ Custom Operative Text
+              </label>
+              <input
+                type="text"
+                id="custom-text"
+                maxlength="20"
+                class="w-full p-3 bg-gray-900 text-white border border-red-600 rounded-md focus:ring-yellow-400 focus:border-yellow-400 text-sm tracking-wide"
+                placeholder="Enter your custom status (Max 20 chars)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- JAVASCRIPT LOGIC ---
+
+      // DOM elements
+      const idCardContainer = document.getElementById("id-card-container");
+      const operativeDP = document.getElementById("operative-dp");
+      const operativeInfo = document.getElementById("operative-info");
+      const imageUploadInput = document.getElementById("image-upload");
+      const operativeNumberInput = document.getElementById("operative-number");
+      const downloadButton = document.getElementById("download-button");
+      const iconContainers = document.querySelectorAll(".operative-icon");
+      const customTextInput = document.getElementById("custom-text");
+
+      // State variables
+      let selectedType = "🐰";
+      let operativeNumber = "";
+
+      // Store your exact target positions here (these values were in your CSS)
+      const LIVE_BOTTOM_PERCENT = 20;
+      const LIVE_LEFT_PERCENT = 48;
+
+      const tabButtons = document.querySelectorAll(".tab-button");
+      const defaultPane = document.getElementById("default-options");
+      const customPane = document.getElementById("custom-options");
+
+      // Function to handle tab switching
+      const switchTab = (activeTab) => {
+        // 1. Toggle Button Styles
+        tabButtons.forEach((button) => {
+          if (button.dataset.tab === activeTab) {
+            button.classList.remove("bg-gray-700", "text-gray-300");
+            button.classList.add("bg-red-600", "text-white");
+          } else {
+            button.classList.remove("bg-red-600", "text-white");
+            button.classList.add("bg-gray-700", "text-gray-300");
+          }
+        });
+
+        // 2. Toggle Content Visibility
+        if (activeTab === "default") {
+          defaultPane.classList.remove("hidden");
+          customPane.classList.add("hidden");
+        } else {
+          defaultPane.classList.add("hidden");
+          customPane.classList.remove("hidden");
+        }
+
+        // 3. Force UI update after switching
+        updateCardText();
+      };
+
+      // Event listener for tab buttons
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
+          const tab = event.target.dataset.tab;
+          switchTab(tab);
+        });
+      });
+
+      // Function to update the text on the card
+      const updateCardText = () => {
+        const customText = customTextInput.value.trim();
+        const numberDisplay = operativeNumber.padStart(3, "0");
+
+        // Check if the CUSTOM tab is active OR if custom text has been entered
+        const isCustomActive = !customPane.classList.contains("hidden");
+
+        if (isCustomActive && customText) {
+          operativeInfo.textContent = customText.toUpperCase();
+        } else {
+          // Fall back to default operative text if the custom tab is inactive or empty
+          operativeInfo.textContent = `OPERATIVE ${selectedType} #${numberDisplay}`;
+        }
+
+        // Applying CSS positioning in JavaScript for the live view
+        // This maintains alignment in the browser while we work on the download fix.
+        operativeInfo.style.position = "absolute";
+        operativeInfo.style.bottom = `${LIVE_BOTTOM_PERCENT}%`;
+        operativeInfo.style.left = `${LIVE_LEFT_PERCENT}%`;
+        operativeInfo.style.transform = "translateX(-50%)";
+      };
+
+      // --- Image Handling Logic ---
+
+      const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            operativeDP.style.backgroundImage = `url('${e.target.result}')`;
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+
+      // --- Download Logic (The Final Fix) ---
+
+      const handleDownload = () => {
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Rendering...";
+
+        // Use document.fonts.ready to ensure the "Digital" font is ready
+        document.fonts.ready
+          .then(() => {
+            // Save original styles
+            const originalPosition = operativeInfo.style.position;
+            const originalBottom = operativeInfo.style.bottom;
+            const originalLeft = operativeInfo.style.left;
+            const originalTransform = operativeInfo.style.transform;
+            operativeInfo.style.bottom = LIVE_BOTTOM_PERCENT + 2 + "%"; // Slight adjustment for download
+
+            // Force a brief delay to ensure the DOM has stabilized (Crucial for html2canvas)
+            setTimeout(() => {
+              // The html2canvas call
+              html2canvas(idCardContainer, {
+                allowTaint: true,
+                useCORS: true,
+                scale: 3,
+                logging: false,
+              })
+                .then((canvas) => {
+                  // RESTORE original styles immediately after capture
+                  operativeInfo.style.position = originalPosition;
+                  operativeInfo.style.left = originalLeft;
+                  operativeInfo.style.transform = originalTransform;
+
+                  // Download routine
+                  const image = canvas.toDataURL("image/png");
+                  const a = document.createElement("a");
+                  a.href = image;
+                  a.download = `G-BOY_${selectedType}_${operativeNumber.padStart(
+                    3,
+                    "0"
+                  )}_ID.png`;
+
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+
+                  downloadButton.textContent = "📥 DOWNLOAD OPERATIVE CARD";
+                  downloadButton.disabled = false;
+
+                  //   restore bottom
+                  operativeInfo.style.bottom = originalBottom;
+                })
+                .catch((error) => {
+                  // Restore styles even on error
+                  operativeInfo.style.position = originalPosition;
+                  operativeInfo.style.bottom = originalBottom;
+                  operativeInfo.style.left = originalLeft;
+                  operativeInfo.style.transform = originalTransform;
+
+                  console.error("Download failed:", error);
+                  downloadButton.textContent = "Download Failed!";
+                  downloadButton.disabled = false;
+                  alert(
+                    "Error creating image for download. Check the console, and ensure you are running on a local server."
+                  );
+                });
+            }, 100); // 100ms delay often helps html2canvas stabilize
+          })
+          .catch((fontError) => {
+            console.error("Font loading error:", fontError);
+            downloadButton.textContent = "Font Load Error!";
+            downloadButton.disabled = false;
+            alert("Error loading custom font. Download failed.");
+          });
+      };
+
+      // --- Existing Event Handlers ---
+
+      const handleIconSelection = (event) => {
+        const target = event.currentTarget;
+        selectedType = target.dataset.type;
+
+        iconContainers.forEach((container) =>
+          container.classList.remove("selected")
+        );
+
+        target.classList.add("selected");
+        updateCardText();
+      };
+
+      const handleNumberInput = (event) => {
+        const value = event.target.value.replace(/[^0-9]/g, "").substring(0, 6);
+        event.target.value = value;
+        operativeNumber = value;
+        updateCardText();
+      };
+
+      const handleCustomTextInput = () => {
+        if (customTextInput.value.trim()) {
+          operativeNumberInput.value = "";
+          operativeNumber = "";
+        }
+        updateCardText();
+      };
+      // --- Initialization and Event Attachments ---
+
+      // Attach file upload handler
+      imageUploadInput.addEventListener("change", handleImageUpload);
+
+      // Attach download handler to the new button
+      downloadButton.addEventListener("click", handleDownload);
+
+      // Attach icon and number handlers
+      iconContainers.forEach((container) => {
+        container.addEventListener("click", handleIconSelection);
+      });
+      operativeNumberInput.addEventListener("input", handleNumberInput);
+      customTextInput.addEventListener("input", handleCustomTextInput);
+
+      // Run initialization
+      operativeNumber = operativeNumberInput.value || "";
+      updateCardText();
+    </script>
+  </body>
+</html>
