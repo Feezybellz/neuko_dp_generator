@@ -107,6 +107,8 @@
       }
       .operative-icon.selected {
         outline: 3px solid #ffff00;
+      }
+      .operative-icon.selected:not(.button) {
         outline-offset: 3px;
         border-radius: 50%;
       }
@@ -209,26 +211,38 @@
               <label class="block text-sm font-medium mb-2"
                 >Select Operative Type:</label
               >
-              <div
-                class="flex space-x-4 justify-around p-3 bg-gray-900 rounded-md"
-              >
+              <div class="p-3 bg-gray-900 rounded-md">
+                <div class="flex space-x-4 justify-around">
+                  <div
+                    id="icon-rabbit"
+                    data-type="🐰"
+                    class="operative-icon p-2 selected"
+                  >
+                    🐰
+                  </div>
+                  <div id="icon-bug" data-type="🐝" class="operative-icon p-2">
+                    🐝
+                  </div>
+                  <div
+                    id="icon-snake"
+                    data-type="🐍"
+                    class="operative-icon p-2"
+                  >
+                    🐍
+                  </div>
+                </div>
+
                 <div
-                  id="icon-rabbit"
-                  data-type="🐰"
-                  class="operative-icon p-2 selected"
+                  id=""
+                  data-type="iii"
+                  class="operative-icon p-2 button w-100 bg-red-600 hover:bg-red-700 text-white font-bold mt-5 p-2 rounded-md text-center"
                 >
-                  🐰
-                </div>
-                <div id="icon-bug" data-type="🐝" class="operative-icon p-2">
-                  🐝
-                </div>
-                <div id="icon-snake" data-type="🐍" class="operative-icon p-2">
-                  🐍
+                  I Saved G*BOY
                 </div>
               </div>
             </div>
 
-            <div class="mb-6">
+            <div class="operative-number-parent mb-6">
               <label
                 for="operative-number"
                 class="block text-sm font-medium mb-2"
@@ -326,6 +340,7 @@
 
       // Function to update the text on the card
       const updateCardText = () => {
+        let messgae = ``;
         const customText = customTextInput.value.trim();
         const numberDisplay = operativeNumber.padStart(3, "0");
 
@@ -335,8 +350,12 @@
         if (isCustomActive && customText) {
           operativeInfo.textContent = customText.toUpperCase();
         } else {
+          message = `OPERATIVE ${selectedType} #${numberDisplay}`;
+          if (selectedType === "iii") {
+            message = `I SAVED G*BOY`;
+          }
           // Fall back to default operative text if the custom tab is inactive or empty
-          operativeInfo.textContent = `OPERATIVE ${selectedType} #${numberDisplay}`;
+          operativeInfo.textContent = message;
         }
 
         // Applying CSS positioning in JavaScript for the live view
@@ -437,6 +456,9 @@
       // --- Existing Event Handlers ---
 
       const handleIconSelection = (event) => {
+        const operativeNumberParent = document.querySelector(
+          ".operative-number-parent"
+        );
         const target = event.currentTarget;
         selectedType = target.dataset.type;
 
@@ -444,6 +466,11 @@
           container.classList.remove("selected")
         );
 
+        if (selectedType === "iii") {
+          operativeNumberParent.style.display = "none";
+        } else {
+          operativeNumberParent.style.display = "block";
+        }
         target.classList.add("selected");
         updateCardText();
       };
