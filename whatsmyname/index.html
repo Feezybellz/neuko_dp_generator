@@ -349,20 +349,6 @@
         });
       });
 
-      // Close Modal
-      closeModalButton.addEventListener("click", () => {
-        nameModal.classList.add("hidden");
-        nameModal.classList.remove("flex");
-      });
-
-      // Close modal when clicking outside
-      nameModal.addEventListener("click", (e) => {
-        if (e.target === nameModal) {
-          nameModal.classList.add("hidden");
-          nameModal.classList.remove("flex");
-        }
-      });
-
       // hide button if url is current
       const currentUrl = window.location.href;
       document.querySelectorAll("#floating-menu a").forEach((link) => {
