@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://neukoai.feezybellz.me/dp/image.png"
+    />
+
+    <title>G*BOY Custom Name Card Builder</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <meta
+      name="description"
+      content="Create and download your custom G*BOY card with your name."
+    />
+    <meta property="og:title" content="G*BOY Custom Name Card Builder" />
+    <meta property="og:description" content="Create your custom card." />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://neukoai.feezybellz.me/dp/image.png"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Preload the font */
+      @font-face {
+        font-family: "SNEEB FONT";
+        src: url("Urban Heroes.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+        font-display: block;
+      }
+
+      /* Basic styling */
+      body {
+        background-color: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: sans-serif;
+        color: white;
+        padding: 20px;
+      }
+
+      /* Set base font size with responsive scaling */
+      html {
+        font-size: 16px;
+      }
+
+      /* Responsive font sizing */
+      @media (max-width: 640px) {
+        html {
+          font-size: 14px;
+        }
+      }
+
+      @media (min-width: 641px) and (max-width: 1024px) {
+        html {
+          font-size: 16px;
+        }
+      }
+
+      @media (min-width: 1025px) {
+        html {
+          font-size: 18px;
+        }
+      }
+
+      /* Style for the dynamically sized custom name */
+      #operative-name {
+        width: 90%;
+        text-align: center;
+        font-family: "SNEEB FONT", cursive;
+        font-weight: bold;
+        color: #000;
+        pointer-events: none;
+        white-space: nowrap;
+        overflow: hidden;
+        position: absolute;
+        z-index: 21;
+        letter-spacing: 0.3rem; /* Using rem for spacing */
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Container adjustments */
+      #id-card-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        max-width: 500px; /* Added max-width for better control */
+      }
+
+      /* Ensure the base image is the container's reference point */
+      #id-card-image {
+        position: relative;
+        z-index: 2;
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Font preloader -->
+    <div
+      id="font-preloader"
+      style="
+        font-family: 'SNEEB FONT';
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        visibility: hidden;
+        font-size: 1px;
+        opacity: 0;
+      "
+    >
+      ABCDEFGHIJKLMNOPQRSTUVWXYZ*0123456789
+    </div>
+
+    <div
+      class="flex flex-col lg:flex-row items-center justify-center gap-8 p-4 max-w-4xl mx-auto"
+    >
+      <div class="w-full max-w-sm sm:w-80 lg:w-96">
+        <div id="id-card-container" class="relative">
+          <img
+            id="id-card-image"
+            src="image.jpg"
+            alt="G*BOY Custom Card Template"
+            class="w-full h-auto"
+          />
+
+          <div id="operative-name">YOUR NAME</div>
+        </div>
+
+        <button
+          id="download-button"
+          class="w-full py-3 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded-md transition duration-150 shadow-lg mt-4"
+        >
+          📥 DOWNLOAD CUSTOM CARD
+        </button>
+      </div>
+
+      <div
+        class="bg-gray-800 p-6 rounded-lg shadow-xl border-2 border-red-600 w-full max-w-sm"
+      >
+        <h2
+          class="text-2xl font-bold mb-6 text-yellow-400 border-b pb-2 border-red-600"
+        >
+          Enter Your Name
+        </h2>
+
+        <div class="mb-8">
+          <label
+            for="name-input"
+            class="block text-lg font-bold mb-3 text-red-400"
+          >
+            ✏️ Custom Name:
+          </label>
+          <input
+            type="text"
+            id="name-input"
+            maxlength="15"
+            class="w-full p-3 bg-gray-900 text-yellow-400 border border-red-600 rounded-md focus:ring-yellow-400 focus:border-yellow-400 text-xl tracking-widest uppercase"
+            placeholder="G*BOY"
+            value="G*BOY"
+          />
+          <p class="text-xs text-gray-500 mt-2">
+            Max 15 characters recommended.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- JAVASCRIPT LOGIC ---
+
+      // --- DOM Elements & State ---
+      const idCardContainer = document.getElementById("id-card-container");
+      const operativeNameDisplay = document.getElementById("operative-name");
+      const downloadButton = document.getElementById("download-button");
+      const nameInput = document.getElementById("name-input");
+      const fontPreloader = document.getElementById("font-preloader");
+
+      let operativeName = nameInput.value || "G*BOY";
+
+      // Target positions (in percentage of parent container height/width)
+      const NAME_TOP_PERCENT = 56.5;
+      const CENTER_LEFT_PERCENT = 50;
+
+      // Function to ensure font is loaded
+      const ensureFontLoaded = () => {
+        return new Promise((resolve) => {
+          // Check if font is already loaded
+          if (document.fonts.check('12px "SNEEB FONT"')) {
+            resolve();
+            return;
+          }
+
+          // Force load the font
+          const fontLoader = new FontFace(
+            "SNEEB FONT",
+            'url("Urban Heroes.ttf")'
+          );
+
+          fontLoader
+            .load()
+            .then((loadedFont) => {
+              document.fonts.add(loadedFont);
+              // Update preloader
+              fontPreloader.style.fontFamily = '"SNEEB FONT"';
+              fontPreloader.textContent =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ*0123456789";
+
+              // Wait a bit to ensure font is ready
+              setTimeout(resolve, 300);
+            })
+            .catch(() => {
+              // Fallback if font loading fails
+              console.warn("Font loading failed, using fallback");
+              resolve();
+            });
+        });
+      };
+
+      const calculateAndApplyFontSize = (name) => {
+        // 1. Set the text content
+        operativeNameDisplay.textContent = name.toUpperCase();
+
+        // 2. Get the actual width of the container displaying the card
+        const cardWidth = idCardContainer.clientWidth;
+        if (!cardWidth) return;
+
+        // 3. Define the maximum allowed width for the text block (90% of cardWidth)
+        const targetWidthRatio = 0.9;
+        const targetWidth = cardWidth * targetWidthRatio;
+
+        // --- Font Resizing Logic with REM units ---
+        // Convert REM limits to pixels for calculation
+        const rootFontSize = parseFloat(
+          getComputedStyle(document.documentElement).fontSize
+        );
+
+        // Set responsive min/max font sizes in REM
+        const MAX_FONT_SIZE_REM = 3.5; // ~56px on desktop, ~49px on tablet, ~63px on large screens
+        const MIN_FONT_SIZE_REM = 1.5; // ~24px on desktop, ~21px on tablet, ~27px on large screens
+
+        // Convert to pixels for calculation
+        const MAX_FONT_SIZE_PX = MAX_FONT_SIZE_REM * rootFontSize;
+        const MIN_FONT_SIZE_PX = MIN_FONT_SIZE_REM * rootFontSize;
+
+        let fontSizePx = MAX_FONT_SIZE_PX;
+        let topPercent = NAME_TOP_PERCENT;
+
+        // Set the initial size for the first measurement
+        operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+        // 4. Shrink font if text is too wide
+        while (
+          operativeNameDisplay.scrollWidth > targetWidth &&
+          fontSizePx > MIN_FONT_SIZE_PX
+        ) {
+          fontSizePx -= 0.5; // Smaller decrement for finer control
+          // Adjust vertical position slightly for smaller fonts
+          topPercent += 0.05;
+          operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+        }
+
+        // 5. Convert to REM for responsiveness
+        const finalFontSizeRem = fontSizePx / rootFontSize;
+        operativeNameDisplay.style.fontSize = `${finalFontSizeRem}rem`;
+
+        // 6. Apply dynamic positioning
+        operativeNameDisplay.style.position = "absolute";
+        operativeNameDisplay.style.top = `${topPercent}%`;
+        operativeNameDisplay.style.left = `${CENTER_LEFT_PERCENT}%`;
+        operativeNameDisplay.style.transform = "translateX(-50%)";
+
+        // Force reflow
+        operativeNameDisplay.offsetHeight;
+      };
+
+      const updateCard = () => {
+        operativeName = nameInput.value.trim() || "G*BOY";
+
+        // Ensure font is loaded before calculating
+        ensureFontLoaded().then(() => {
+          calculateAndApplyFontSize(operativeName);
+        });
+      };
+
+      const handleDownload = () => {
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Rendering...";
+
+        operativeName = nameInput.value.trim() || "G*BOY";
+
+        // Ensure font is fully loaded
+        ensureFontLoaded()
+          .then(() => {
+            // First update the card display
+            calculateAndApplyFontSize(operativeName);
+
+            // Save original styles
+            const originalStyles = {
+              fontSize: operativeNameDisplay.style.fontSize,
+              top: operativeNameDisplay.style.top,
+              left: operativeNameDisplay.style.left,
+              transform: operativeNameDisplay.style.transform,
+              position: operativeNameDisplay.style.position,
+              padding: operativeNameDisplay.style.padding,
+              margin: operativeNameDisplay.style.margin,
+              lineHeight: operativeNameDisplay.style.lineHeight,
+            };
+
+            // Remove padding and margin for clean capture
+            operativeNameDisplay.style.padding = "0";
+            operativeNameDisplay.style.margin = "0";
+            operativeNameDisplay.style.lineHeight = "1";
+
+            // Force reflow
+            operativeNameDisplay.offsetHeight;
+            const tempContainer = document.createElement("div");
+
+            // Add font-face to document head
+            const fontStyle = document.createElement("style");
+            fontStyle.textContent = `
+              @font-face {
+                font-family: "SNEEB FONT";
+                src: url("Urban Heroes.ttf") format("truetype");
+                font-weight: normal;
+                font-style: normal;
+              }
+            `;
+
+            // Wait for everything to render
+            setTimeout(() => {
+              // Get the image source
+              const img = document.getElementById("id-card-image");
+              const imgSrc = img.src;
+
+              // Get computed styles
+              const fontSize = operativeNameDisplay.style.fontSize;
+              const top = operativeNameDisplay.style.top;
+              const left = operativeNameDisplay.style.left;
+              const transform = operativeNameDisplay.style.transform;
+
+              // Create a temporary container with simple structure
+              tempContainer.style.position = "fixed";
+              tempContainer.style.left = "0";
+              tempContainer.style.top = "0";
+              tempContainer.style.width = idCardContainer.offsetWidth + "px";
+              tempContainer.style.height = idCardContainer.offsetHeight + "px";
+              tempContainer.style.zIndex = "99999";
+              tempContainer.style.opacity = "0.01";
+
+              // Create the HTML structure with all styles inline
+              tempContainer.innerHTML = `
+        <div id="temp-card" style="
+          position: relative; 
+          width: 100%; 
+          height: 100%; 
+          font-family: 'SNEEB FONT', cursive;
+        ">
+          <img 
+            src="${imgSrc}" 
+            crossorigin="anonymous" 
+            style="
+              width: 100%; 
+              height: auto; 
+              display: block;
+            "
+          >
+          <div id="temp-name" style="
+            position: absolute;
+            top: ${top};
+            left: ${left};
+            transform: ${transform};
+            width: 90%;
+            text-align: center;
+            font-family: 'SNEEB FONT', cursive;
+            font-weight: bold;
+            font-size: ${fontSize};
+            color: #000000;
+            white-space: nowrap;
+            letter-spacing: 0.3rem;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            z-index: 21;
+            text-shadow: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          ">${operativeName.toUpperCase()}</div>
+        </div>
+      `;
+
+              document.body.appendChild(tempContainer);
+              document.head.appendChild(fontStyle);
+
+              // Wait for the font to apply
+              setTimeout(() => {
+                const tempCard = tempContainer.querySelector("#temp-card");
+
+                if (!tempCard) {
+                  console.error("Temp card not found");
+                  cleanup();
+                  downloadButton.textContent = "Error: Element not found";
+                  downloadButton.disabled = false;
+                  return;
+                }
+
+                // Use html2canvas
+                html2canvas(tempCard, {
+                  scale: 3,
+                  useCORS: true,
+                  allowTaint: false,
+                  backgroundColor: null,
+                  logging: false,
+                })
+                  .then((canvas) => {
+                    const image = canvas.toDataURL("image/png");
+                    const a = document.createElement("a");
+                    a.href = image;
+                    a.download = `G-BOY_${operativeName.toUpperCase()}_CARD.png`;
+
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    cleanup();
+                    downloadButton.textContent = "📥 DOWNLOAD CUSTOM CARD";
+                    downloadButton.disabled = false;
+                  })
+                  .catch((error) => {
+                    console.error("Canvas error:", error);
+                    cleanup();
+                    downloadButton.textContent = "Download Failed!";
+                    downloadButton.disabled = false;
+                    alert("Error creating image. Please try again.");
+                  });
+              }, 500);
+            }, 200);
+
+            function cleanup() {
+              if (tempContainer && tempContainer.parentNode) {
+                document.body.removeChild(tempContainer);
+              }
+              if (fontStyle && fontStyle.parentNode) {
+                document.head.removeChild(fontStyle);
+              }
+              Object.keys(originalStyles).forEach((property) => {
+                operativeNameDisplay.style[property] = originalStyles[property];
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Font load error:", error);
+            downloadButton.textContent = "Font Load Error!";
+            downloadButton.disabled = false;
+          });
+      };
+
+      // --- Event Handlers ---
+      nameInput.addEventListener("input", updateCard);
+      downloadButton.addEventListener("click", handleDownload);
+      window.addEventListener("resize", updateCard);
+
+      // Initialize
+      window.addEventListener("load", () => {
+        ensureFontLoaded().then(() => {
+          updateCard();
+        });
+      });
+    </script>
+  </body>
+</html>

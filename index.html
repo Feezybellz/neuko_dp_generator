@@ -18,7 +18,7 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <meta
       name="description"
-      content="G*BOY Operative Identity Card Builder: Create and download your custom hacker profile picture with Operative Type and Number."
+      content="G*BOY Operative Identity Card: Create and download your custom ID with your hooded PFP, Operative Type and Number."
     />
     <meta name="keywords" content="G*BOY, DP, OPERATIVE ID Card, Operative" />
     <meta name="author" content="That Chill Guy" />
@@ -55,14 +55,18 @@
       content="https://neukoai.feezybellz.me/dp/image.png"
     />
 
+    <link
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      @font-face {
+      /* @font-face {
         font-family: "Digital";
         src: url("https://fonts.gstatic.com/s/vt323/v15/pxiKyp4fG-ZrgT5rJ2YpAw.woff2")
           format("woff2");
         font-weight: 400;
         font-style: normal;
-      }
+      } */
 
       /* Basic styling */
       body {
@@ -71,7 +75,8 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        font-family: "Digital", monospace;
+        font-family: sans-serif;
+        font-size: 5px;
         color: white;
         padding: 20px;
       }
@@ -91,7 +96,7 @@
       }
       @media (min-width: 640px) {
         #operative-info {
-          font-size: 0.8rem;
+          font-size: 0.7rem;
         }
       }
       /* IMPORTANT: Do not set absolute positioning in the CSS here anymore. */
@@ -132,10 +137,110 @@
         position: relative;
         z-index: 2;
       }
+
+      #tab-selector > button {
+        font-size: 10px;
+      }
     </style>
   </head>
 
   <body>
+    <!-- menu -->
+    <div
+      class="fixed top-0 right-0 z-50 p-4 transition-transform duration-300 transform"
+      id="floating-menu"
+    >
+      <div
+        id="sidebar-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden lg:hidden z-40"
+      ></div>
+      <div class="hidden lg:flex flex-col space-y-3">
+        <a
+          href="https://neuko.wiki"
+          target="_blank"
+          class="px-4 py-2 bg-red-600 text-white font-bold rounded-full shadow-lg hover:bg-red-700 transition duration-150 text-sm sm:text-base border-2 border-yellow-400 text-center"
+        >
+          NEUKO WIKI
+        </a>
+        <a
+          href="/dp/"
+          class="px-4 py-2 bg-yellow-600 text-gray-900 font-bold rounded-full shadow-lg hover:bg-yellow-700 transition duration-150 text-sm sm:text-base border-2 border-red-400 text-center"
+        >
+          G*BOY ID CARD
+        </a>
+        <a
+          href="/dp/whatsmyname"
+          class="px-4 py-2 bg-yellow-600 text-gray-900 font-bold rounded-full shadow-lg hover:bg-yellow-700 transition duration-150 text-sm sm:text-base border-2 border-red-400 text-center"
+        >
+          WHAT'S MY NAME
+        </a>
+      </div>
+
+      <button
+        id="menu-toggle-button"
+        class="lg:hidden p-3 bg-red-600 rounded-full text-white shadow-xl hover:bg-red-700 focus:outline-none relative z-50"
+        style="z-index: 999"
+      >
+        <svg
+          id="hamburger-icon"
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+        <svg
+          id="close-icon"
+          class="w-6 h-6 hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+
+      <div
+        id="mobile-sidebar"
+        class="lg:hidden fixed top-0 right-0 h-screen w-64 bg-gray-900 shadow-2xl transition-transform duration-300 transform translate-x-full p-6 space-y-6 z-50"
+      >
+        <div class="pt-10 flex flex-col space-y-4">
+          <a
+            href="https://neuko.wiki"
+            target="_blank"
+            class="block px-4 py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition duration-150 text-lg border-2 border-yellow-400 text-center"
+          >
+            NEUKO WIKI
+          </a>
+          <a
+            href="/dp/"
+            class="block px-4 py-3 bg-yellow-600 text-gray-900 font-bold rounded-lg shadow-lg hover:bg-yellow-700 transition duration-150 text-lg border-2 border-red-400 text-center"
+          >
+            G*BOY ID CARD
+          </a>
+          <a
+            href="/dp/whatsmyname"
+            class="block px-4 py-3 bg-yellow-600 text-gray-900 font-bold rounded-lg shadow-lg hover:bg-yellow-700 transition duration-150 text-lg border-2 border-red-400 text-center"
+          >
+            WHAT'S MY NAME
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- menu -->
     <div
       class="flex flex-col lg:flex-row items-center justify-center gap-8 p-4 max-w-4xl mx-auto"
     >
@@ -279,6 +384,83 @@
       </div>
     </div>
 
+    <script>
+      // --- MENU -----
+      // --- New Mobile Menu and Modal Logic ---
+      const menuToggleButton = document.getElementById("menu-toggle-button");
+      const mobileSidebar = document.getElementById("mobile-sidebar");
+      const sidebarOverlay = document.getElementById("sidebar-overlay"); // NEW ELEMENT
+      const hamburgerIcon = document.getElementById("hamburger-icon");
+      const closeIcon = document.getElementById("close-icon");
+      const nameModal = document.getElementById("name-modal");
+      const openModalButtons = document.querySelectorAll(
+        "#open-modal-button, #open-modal-button-mobile"
+      );
+      const closeModalButton = document.getElementById("close-modal-button");
+
+      // Function to handle opening and closing the sidebar
+      const toggleSidebar = (open) => {
+        const isMenuOpen =
+          !mobileSidebar.classList.contains("translate-x-full");
+
+        if (open === undefined) {
+          // Toggle behavior if no argument is provided
+          open = !isMenuOpen;
+        }
+
+        if (open) {
+          // Open menu (Slide in)
+          mobileSidebar.classList.remove("translate-x-full");
+          sidebarOverlay.classList.remove("hidden"); // SHOW OVERLAY
+          hamburgerIcon.classList.add("hidden");
+          closeIcon.classList.remove("hidden");
+        } else {
+          // Close menu (Slide out)
+          mobileSidebar.classList.add("translate-x-full");
+          sidebarOverlay.classList.add("hidden"); // HIDE OVERLAY
+          hamburgerIcon.classList.remove("hidden");
+          closeIcon.classList.add("hidden");
+        }
+      };
+
+      // Toggle Mobile Sidebar when button is clicked
+      menuToggleButton.addEventListener("click", () => {
+        toggleSidebar();
+      });
+
+      // NEW: Close sidebar when clicking on the transparent overlay
+      sidebarOverlay.addEventListener("click", () => {
+        toggleSidebar(false);
+      });
+
+      // Open Modal
+      openModalButtons.forEach((button) => {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          nameModal.classList.remove("hidden");
+          nameModal.classList.add("flex");
+
+          // Close mobile menu if it's open
+          toggleSidebar(false);
+        });
+      });
+
+      // Close Modal
+      closeModalButton.addEventListener("click", () => {
+        nameModal.classList.add("hidden");
+        nameModal.classList.remove("flex");
+      });
+
+      // Close modal when clicking outside
+      nameModal.addEventListener("click", (e) => {
+        if (e.target === nameModal) {
+          nameModal.classList.add("hidden");
+          nameModal.classList.remove("flex");
+        }
+      });
+
+      // --- End New Logic ---
+    </script>
     <script>
       // --- JAVASCRIPT LOGIC ---
 

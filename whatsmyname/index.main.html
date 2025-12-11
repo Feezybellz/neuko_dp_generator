@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://neukoai.feezybellz.me/dp/image.png"
+    />
+
+    <title>G*BOY Custom Name Card Builder</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <meta
+      name="description"
+      content="Create and download your custom G*BOY card with your name."
+    />
+    <meta property="og:title" content="G*BOY Custom Name Card Builder" />
+    <meta property="og:description" content="Create your custom card." />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://neukoai.feezybellz.me/dp/image.png"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      @font-face {
+        font-family: "SNEEB FONT"; /* This is the name you will use in CSS */
+        /* Adjust the path ('./adrip.ttf') if your file is in a different folder,
+       e.g., if it's in a 'fonts' folder, use 'fonts/adrip.ttf' */
+        src: url("Urban Heroes.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      /* Basic styling */
+      body {
+        background-color: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: sans-serif;
+        color: white;
+        padding: 20px;
+      }
+
+      /* Add this to the <style> block */
+      /* Set a base font size on the HTML root element (e.g., 16px) */
+      html {
+        font-size: 16px;
+      }
+
+      /* Adjust root font size for smaller screens (e.g., 14px on mobile) */
+      @media (max-width: 640px) {
+        html {
+          font-size: 14px;
+        }
+      }
+
+      /* Style for the dynamically sized custom name */
+      #operative-name {
+        width: 90%;
+        text-align: center;
+        font-family: "SNEEB FONT", cursive;
+        font-weight: bold;
+        font-size: 58px; /* Initial size, will be overridden by JS */
+        color: #000; /* Yellow text for contrast */
+        pointer-events: none;
+        white-space: nowrap;
+        overflow: hidden;
+        position: absolute; /* positioned by JS */
+        z-index: 21;
+        letter-spacing: 5px;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+      }
+
+      /* #operative-name::after {
+        content: "";
+        display: block;
+        height: 4px;
+        width: 80%;
+        background-color: #000;
+
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      } */
+
+      /* Ensure the base image is the container's reference point */
+      #id-card-image {
+        position: relative;
+        z-index: 2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div
+      class="flex flex-col lg:flex-row items-center justify-center gap-8 p-4 max-w-4xl mx-auto"
+    >
+      <div class="w-full max-w-sm sm:w-80 lg:w-96">
+        <div id="id-card-container" class="relative">
+          <img
+            id="id-card-image"
+            src="image.jpg"
+            alt="G*BOY Custom Card Template"
+            class="w-full h-auto"
+          />
+
+          <div id="operative-name">YOUR NAME</div>
+        </div>
+
+        <button
+          id="download-button"
+          class="w-full py-3 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded-md transition duration-150 shadow-lg mt-4"
+        >
+          📥 DOWNLOAD CUSTOM CARD
+        </button>
+      </div>
+
+      <div
+        class="bg-gray-800 p-6 rounded-lg shadow-xl border-2 border-red-600 w-full max-w-sm"
+      >
+        <h2
+          class="text-2xl font-bold mb-6 text-yellow-400 border-b pb-2 border-red-600"
+        >
+          Enter Your Name
+        </h2>
+
+        <div class="mb-8">
+          <label
+            for="name-input"
+            class="block text-lg font-bold mb-3 text-red-400"
+          >
+            ✏️ Custom Name:
+          </label>
+          <input
+            type="text"
+            id="name-input"
+            maxlength="15"
+            class="w-full p-3 bg-gray-900 text-yellow-400 border border-red-600 rounded-md focus:ring-yellow-400 focus:border-yellow-400 text-xl tracking-widest uppercase"
+            placeholder="G*BOY"
+            value="G*BOY"
+          />
+          <p class="text-xs text-gray-500 mt-2">
+            Max 15 characters recommended.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- JAVASCRIPT LOGIC ---
+
+      // --- DOM Elements & State ---
+      const idCardContainer = document.getElementById("id-card-container");
+      const operativeNameDisplay = document.getElementById("operative-name");
+      const downloadButton = document.getElementById("download-button");
+      const nameInput = document.getElementById("name-input");
+
+      let operativeName = nameInput.value || "G*BOY";
+
+      // Target positions (in percentage of parent container height/width)
+      // NOTE: This position is critical and might need fine-tuning based on your image.png template!
+      //   const NAME_TOP_PERCENT = 60.5;
+      //   const CENTER_LEFT_PERCENT = 50;
+
+      /**
+       * Dynamically calculates and applies the font size to the name,
+       * resizing downward if the text exceeds the maximum width.
+       */
+      // Target positions (in percentage of parent container height/width)
+      // Based on the image, the text needs to start lower down the white label.
+      // 20.5% was too high; let's try 60-70% to land it in the middle of the white box.
+      const NAME_TOP_PERCENT = 56.5;
+      const CENTER_LEFT_PERCENT = 50;
+
+      // ... (rest of the script)
+
+      //   const calculateAndApplyFontSize = (name) => {
+      //     // 1. Set the text content
+      //     operativeNameDisplay.textContent = name.toUpperCase();
+
+      //     // 2. Get the actual width of the container displaying the card
+      //     const cardWidth = idCardContainer.clientWidth;
+      //     if (!cardWidth) return;
+
+      //     // 3. Define the maximum allowed width for the text block.
+      //     // INCREASED to 0.9 (90%) to utilize the full width of the white label.
+      //     const targetWidthRatio = 0.9;
+      //     const targetWidth = cardWidth * targetWidthRatio;
+
+      //     // --- Font Resizing Logic ---
+
+      //     // A. Define the maximum desirable size for short names.
+      //     // We will start at the MAX size and only shrink if necessary.
+      //     const MAX_FONT_SIZE = 70;
+      //     let fontSizePx = MAX_FONT_SIZE;
+
+      //     // Set the initial size for the first measurement
+      //     operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+      //     // 4. SHRINK DOWN (Handles long names that exceed the desired MAX_FONT_SIZE width)
+      //     // Shrink the font only if the scrollWidth EXCEEDS the targetWidth.
+      //     while (
+      //       operativeNameDisplay.scrollWidth > targetWidth &&
+      //       fontSizePx > 10
+      //     ) {
+      //       fontSizePx -= 1;
+      //       // Apply the decreased size for the next scrollWidth check
+      //       operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+      //     }
+
+      //     // NOTE: The second 'GROW UP' loop is now removed.
+      //     // By starting at the MAX_FONT_SIZE (70px), short names will automatically
+      //     // stay at 70px unless they are too wide (step 4), which is cleaner.
+
+      //     // 5. Apply dynamic positioning (keeps it centered on the card)
+      //     operativeNameDisplay.style.position = "absolute";
+      //     operativeNameDisplay.style.top = `${NAME_TOP_PERCENT}%`;
+      //     operativeNameDisplay.style.left = `${CENTER_LEFT_PERCENT}%`;
+      //     operativeNameDisplay.style.transform = "translateX(-50%)";
+      //   };
+
+      //   const calculateAndApplyFontSize = (name) => {
+      //     // 1. Set the text content
+      //     operativeNameDisplay.textContent = name.toUpperCase();
+
+      //     // 2. Get the actual width of the container displaying the card
+      //     const cardWidth = idCardContainer.clientWidth;
+      //     if (!cardWidth) return;
+
+      //     // 3. Define the maximum allowed width for the text block.
+      //     // INCREASED to 0.9 (90%) to utilize the full width of the white label.
+      //     const targetWidthRatio = 0.9;
+      //     const targetWidth = cardWidth * targetWidthRatio;
+
+      //     // --- Font Resizing Logic ---
+
+      //     // A. Define the maximum desirable size for short names.
+      //     // We will start at the MAX size and only shrink if necessary.
+      //     const MAX_FONT_SIZE = 70;
+      //     let fontSizePx = MAX_FONT_SIZE;
+      //     let topPercent = NAME_TOP_PERCENT;
+
+      //     // Set the initial size for the first measurement
+      //     operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+      //     // 4. SHRINK DOWN (Handles long names that exceed the desired MAX_FONT_SIZE width)
+      //     // Shrink the font only if the scrollWidth EXCEEDS the targetWidth.
+      //     while (
+      //       operativeNameDisplay.scrollWidth > targetWidth &&
+      //       fontSizePx > 10
+      //     ) {
+      //       fontSizePx -= 1;
+      //       topPercent += 0.15; // Slightly adjust vertical position downwards for smaller text
+      //       // Apply the decreased size for the next scrollWidth check
+      //       operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+      //     }
+
+      //     // 5. Apply dynamic positioning (keeps it centered on the card)
+      //     operativeNameDisplay.style.position = "absolute";
+      //     operativeNameDisplay.style.top = `${topPercent}%`;
+      //     operativeNameDisplay.style.left = `${CENTER_LEFT_PERCENT}%`;
+      //     operativeNameDisplay.style.transform = "translateX(-50%)";
+      //   };
+      const calculateAndApplyFontSize = (name) => {
+        // 1. Get the current root font size for conversion
+        const rootFontSize = parseFloat(
+          getComputedStyle(document.documentElement).fontSize
+        );
+
+        // 2. Set the text content
+        operativeNameDisplay.textContent = name.toUpperCase();
+
+        // 3. Get the actual width of the container displaying the card
+        const cardWidth = idCardContainer.clientWidth;
+        if (!cardWidth) return;
+
+        // 4. Define the maximum allowed width for the text block (90% of cardWidth)
+        const targetWidthRatio = 0.9;
+        const targetWidth = cardWidth * targetWidthRatio;
+
+        // --- Font Resizing Logic ---
+
+        // A. Define the maximum desirable size for short names in PX.
+        // 70px is a good max for desktop/tablet; we convert this to REM later.
+        const MAX_FONT_SIZE_PX = 70;
+        let fontSizePx = MAX_FONT_SIZE_PX;
+        let topPercent = NAME_TOP_PERCENT;
+
+        // Set the initial size for the first measurement (temporarily in PX)
+        operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+        // 5. SHRINK DOWN (Handles long names)
+        // Shrink the font only if the scrollWidth EXCEEDS the targetWidth.
+        while (
+          operativeNameDisplay.scrollWidth > targetWidth &&
+          fontSizePx > 10
+        ) {
+          fontSizePx -= 1;
+          topPercent += 0.15; // Slightly adjust vertical position downwards for smaller text
+
+          // Apply the decreased size for the next scrollWidth check
+          operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+        }
+
+        // 6. Final application: Convert the final pixel size to REM and apply it.
+        const finalFontSizeRem = fontSizePx / rootFontSize;
+
+        operativeNameDisplay.style.fontSize = `${finalFontSizeRem}rem`;
+
+        // 7. Apply dynamic positioning (already using responsive percentages)
+        operativeNameDisplay.style.position = "absolute";
+        operativeNameDisplay.style.top = `${topPercent}%`;
+        operativeNameDisplay.style.left = `${CENTER_LEFT_PERCENT}%`;
+        operativeNameDisplay.style.transform = "translateX(-50%)";
+      };
+
+      /**
+       * Master update function called on input or resize.
+       */
+      const updateCard = () => {
+        operativeName = nameInput.value.trim() || "G*BOY";
+        calculateAndApplyFontSize(operativeName);
+      };
+
+      // --- Event Handlers ---
+
+      //   const handleDownload = () => {
+      //     downloadButton.disabled = true;
+      //     downloadButton.textContent = "Rendering...";
+
+      //     // Ensure current text sizing is correct before capture
+      //     updateCard();
+
+      //     // Ensure custom font is loaded before capturing
+      //     document.fonts.ready
+      //       .then(() => {
+      //         // Save original styles for restoration
+      //         const originalNamePosition = operativeNameDisplay.style.position;
+      //         const originalNameTop = operativeNameDisplay.style.top;
+      //         const originalNameLeft = operativeNameDisplay.style.left;
+      //         const originalNameTransform = operativeNameDisplay.style.transform;
+
+      //         setTimeout(() => {
+      //           html2canvas(idCardContainer, {
+      //             allowTaint: true,
+      //             useCORS: true,
+      //             scale: 3, // High scale for high-res download
+      //             logging: false,
+      //           })
+      //             .then((canvas) => {
+      //               // RESTORE original styles immediately after capture
+      //               operativeNameDisplay.style.position = originalNamePosition;
+      //               operativeNameDisplay.style.top = originalNameTop;
+      //               operativeNameDisplay.style.left = originalNameLeft;
+      //               operativeNameDisplay.style.transform = originalNameTransform;
+
+      //               // Download routine
+      //               const image = canvas.toDataURL("image/png");
+      //               const a = document.createElement("a");
+      //               a.href = image;
+      //               a.download = `G-BOY_${operativeName.toUpperCase()}_CARD.png`;
+
+      //               document.body.appendChild(a);
+      //               a.click();
+      //               document.body.removeChild(a);
+
+      //               downloadButton.textContent = "📥 DOWNLOAD CUSTOM CARD";
+      //               downloadButton.disabled = false;
+      //             })
+      //             .catch((error) => {
+      //               console.error("Download failed:", error);
+      //               downloadButton.textContent = "Download Failed!";
+      //               downloadButton.disabled = false;
+      //               alert("Error creating image for download.");
+      //             });
+      //         }, 100);
+      //       })
+      //       .catch((error) => {
+      //         console.error("Font Load Error:", error);
+      //         downloadButton.textContent = "Font Load Error!";
+      //         downloadButton.disabled = false;
+      //         alert("Error loading custom font. Download failed.");
+      //       });
+      //   };
+
+      const handleDownload = () => {
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Rendering...";
+
+        // 1. Ensure current text sizing is correct before capture
+        // This is crucial to set the font size/position one last time.
+        calculateAndApplyFontSize(nameInput.value.trim() || "G*BOY");
+
+        // 2. Ensure custom font is loaded before capturing
+        document.fonts.ready
+          .then(() => {
+            // Save original styles for restoration
+            const originalNamePosition = operativeNameDisplay.style.position;
+            const originalNameTop = operativeNameDisplay.style.top;
+            const originalNameLeft = operativeNameDisplay.style.left;
+            const originalNameTransform = operativeNameDisplay.style.transform;
+
+            // FIX: Adjust the vertical position UP by the amount of padding added.
+            // Since we added 0.5rem padding top, we temporarily move the text up
+            // slightly to keep the visible part centered during capture.
+            const ADJUSTED_TOP = NAME_TOP_PERCENT - 10;
+
+            operativeNameDisplay.style.top = `${ADJUSTED_TOP}%`;
+
+            setTimeout(() => {
+              html2canvas(idCardContainer, {
+                allowTaint: true,
+                useCORS: true,
+                scale: 3, // High scale for high-res download
+                logging: false,
+                // Use a specific bounding box if necessary (advanced, usually not needed with padding fix)
+                // width: idCardContainer.scrollWidth,
+                // height: idCardContainer.scrollHeight
+              })
+                .then((canvas) => {
+                  // RESTORE original styles immediately after capture
+                  operativeNameDisplay.style.position = originalNamePosition;
+                  operativeNameDisplay.style.top = originalNameTop;
+                  operativeNameDisplay.style.left = originalNameLeft;
+                  operativeNameDisplay.style.transform = originalNameTransform;
+
+                  // Download routine
+                  const image = canvas.toDataURL("image/png");
+                  const a = document.createElement("a");
+                  a.href = image;
+                  a.download = `G-BOY_${(
+                    nameInput.value.trim() || "NAME"
+                  ).toUpperCase()}_CARD.png`;
+
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+
+                  downloadButton.textContent = "📥 DOWNLOAD CUSTOM CARD";
+                  downloadButton.disabled = false;
+                })
+                .catch((error) => {
+                  console.error("Download failed:", error);
+                  downloadButton.textContent = "Download Failed!";
+                  downloadButton.disabled = false;
+                  alert("Error creating image for download.");
+                });
+            }, 100);
+          })
+          .catch((error) => {
+            console.error("Font Load Error:", error);
+            downloadButton.textContent = "Font Load Error!";
+            downloadButton.disabled = false;
+            alert("Error loading custom font. Download failed.");
+          });
+      };
+      // --- Initialization and Event Attachments ---
+
+      // Name input handler
+      nameInput.addEventListener("input", updateCard);
+
+      // Download handler
+      downloadButton.addEventListener("click", handleDownload);
+
+      // Recalculate size on window resize
+      window.addEventListener("resize", updateCard);
+
+      // Run initialization
+      updateCard();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://neukoai.feezybellz.me/dp/whatsmyname/image.jpg"
+    />
+
+    <title>G*BOY Custom Name Card Builder</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <meta
+      name="description"
+      content="Create and download your custom G*BOY card with your name."
+    />
+    <meta property="og:title" content="G*BOY Custom Name Card Builder" />
+    <meta property="og:description" content="Create your custom card." />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://neukoai.feezybellz.me/dp/whatsmyname/image.jpg"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Preload the font */
+      @font-face {
+        font-family: "SNEEB FONT";
+        src: url("Urban Heroes.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+        font-display: block;
+      }
+
+      /* Basic styling */
+      body {
+        background-color: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: sans-serif;
+        color: white;
+        padding: 20px;
+      }
+
+      /* Set a base font size on the HTML root element */
+      html {
+        font-size: 16px;
+      }
+
+      /* Adjust root font size for better responsiveness */
+      @media (max-width: 640px) {
+        html {
+          font-size: 14px;
+        }
+      }
+
+      @media (min-width: 641px) and (max-width: 1024px) {
+        html {
+          font-size: 16px;
+        }
+      }
+
+      @media (min-width: 1025px) {
+        html {
+          font-size: 18px;
+        }
+      }
+
+      /* Style for the dynamically sized custom name */
+      #operative-name {
+        width: 90%;
+        text-align: center;
+        font-family: "SNEEB FONT", cursive;
+        font-weight: bold;
+        color: #000;
+        pointer-events: none;
+        white-space: nowrap;
+        overflow: hidden;
+        position: absolute;
+        z-index: 21;
+        letter-spacing: 0.3rem;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-wrap: auto;
+      }
+
+      /* Container adjustments */
+      #id-card-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      /* Ensure the base image is the container's reference point */
+      #id-card-image {
+        position: relative;
+        z-index: 2;
+        display: block;
+        width: 100%;
+        height: auto;
+        max-width: 500px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- menu -->
+    <div
+      class="fixed top-0 right-0 z-50 p-4 transition-transform duration-300 transform"
+      id="floating-menu"
+    >
+      <div
+        id="sidebar-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden lg:hidden z-40"
+      ></div>
+      <div class="hidden lg:flex flex-col space-y-3">
+        <a
+          href="https://neuko.wiki"
+          target="_blank"
+          class="px-4 py-2 bg-red-600 text-white font-bold rounded-full shadow-lg hover:bg-red-700 transition duration-150 text-sm sm:text-base border-2 border-yellow-400 text-center"
+        >
+          NEUKO WIKI
+        </a>
+        <a
+          href="/dp/"
+          class="px-4 py-2 bg-yellow-600 text-gray-900 font-bold rounded-full shadow-lg hover:bg-yellow-700 transition duration-150 text-sm sm:text-base border-2 border-red-400 text-center"
+        >
+          G*BOY ID CARD
+        </a>
+        <a
+          href="/dp/whatsmyname"
+          class="px-4 py-2 bg-yellow-600 text-gray-900 font-bold rounded-full shadow-lg hover:bg-yellow-700 transition duration-150 text-sm sm:text-base border-2 border-red-400 text-center"
+        >
+          WHAT'S MY NAME
+        </a>
+      </div>
+
+      <button
+        id="menu-toggle-button"
+        class="lg:hidden p-3 bg-red-600 rounded-full text-white shadow-xl hover:bg-red-700 focus:outline-none relative z-50"
+        style="z-index: 999"
+      >
+        <svg
+          id="hamburger-icon"
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+        <svg
+          id="close-icon"
+          class="w-6 h-6 hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+
+      <div
+        id="mobile-sidebar"
+        class="lg:hidden fixed top-0 right-0 h-screen w-64 bg-gray-900 shadow-2xl transition-transform duration-300 transform translate-x-full p-6 space-y-6 z-50"
+      >
+        <div class="pt-10 flex flex-col space-y-4">
+          <a
+            href="https://neuko.wiki"
+            target="_blank"
+            class="block px-4 py-3 bg-red-600 text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition duration-150 text-lg border-2 border-yellow-400 text-center"
+          >
+            NEUKO WIKI
+          </a>
+          <a
+            href="/dp/"
+            class="block px-4 py-3 bg-yellow-600 text-gray-900 font-bold rounded-lg shadow-lg hover:bg-yellow-700 transition duration-150 text-lg border-2 border-red-400 text-center"
+          >
+            G*BOY ID CARD
+          </a>
+          <a
+            href="/dp/whatsmyname"
+            class="block px-4 py-3 bg-yellow-600 text-gray-900 font-bold rounded-lg shadow-lg hover:bg-yellow-700 transition duration-150 text-lg border-2 border-red-400 text-center"
+          >
+            WHAT'S MY NAME
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- menu -->
+
+    <!-- Font preloader -->
+    <div
+      id="font-preloader"
+      style="
+        font-family: 'SNEEB FONT';
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        visibility: hidden;
+        font-size: 1px;
+        opacity: 0;
+      "
+    >
+      ABCDEFGHIJKLMNOPQRSTUVWXYZ*0123456789
+    </div>
+
+    <div
+      class="flex flex-col lg:flex-row items-center justify-center gap-8 p-4 max-w-4xl mx-auto"
+    >
+      <div class="w-full max-w-sm sm:w-80 lg:w-96">
+        <div id="id-card-container" class="relative">
+          <img
+            id="id-card-image"
+            src="image.jpg"
+            alt="G*BOY Custom Card Template"
+            class="w-full h-auto"
+          />
+
+          <div id="operative-name">YOUR NAME</div>
+        </div>
+
+        <button
+          id="download-button"
+          class="w-full py-3 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded-md transition duration-150 shadow-lg mt-4"
+        >
+          📥 DOWNLOAD CUSTOM CARD
+        </button>
+      </div>
+
+      <div
+        class="bg-gray-800 p-6 rounded-lg shadow-xl border-2 border-red-600 w-full max-w-sm"
+      >
+        <h2
+          class="text-2xl font-bold mb-6 text-yellow-400 border-b pb-2 border-red-600"
+        >
+          Enter Your Name
+        </h2>
+
+        <div class="mb-8">
+          <label
+            for="name-input"
+            class="block text-lg font-bold mb-3 text-red-400"
+          >
+            ✏️ Custom Name:
+          </label>
+          <input
+            type="text"
+            id="name-input"
+            maxlength="15"
+            class="w-full p-3 bg-gray-900 text-yellow-400 border border-red-600 rounded-md focus:ring-yellow-400 focus:border-yellow-400 text-xl tracking-widest uppercase"
+            placeholder="G*BOY"
+            value="G*BOY"
+          />
+          <p class="text-xs text-gray-500 mt-2">
+            Max 15 characters recommended.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- MENU -----
+      // --- New Mobile Menu and Modal Logic ---
+      const menuToggleButton = document.getElementById("menu-toggle-button");
+      const mobileSidebar = document.getElementById("mobile-sidebar");
+      const sidebarOverlay = document.getElementById("sidebar-overlay"); // NEW ELEMENT
+      const hamburgerIcon = document.getElementById("hamburger-icon");
+      const closeIcon = document.getElementById("close-icon");
+      const nameModal = document.getElementById("name-modal");
+      const openModalButtons = document.querySelectorAll(
+        "#open-modal-button, #open-modal-button-mobile"
+      );
+      const closeModalButton = document.getElementById("close-modal-button");
+
+      // Function to handle opening and closing the sidebar
+      const toggleSidebar = (open) => {
+        const isMenuOpen =
+          !mobileSidebar.classList.contains("translate-x-full");
+
+        if (open === undefined) {
+          // Toggle behavior if no argument is provided
+          open = !isMenuOpen;
+        }
+
+        if (open) {
+          // Open menu (Slide in)
+          mobileSidebar.classList.remove("translate-x-full");
+          sidebarOverlay.classList.remove("hidden"); // SHOW OVERLAY
+          hamburgerIcon.classList.add("hidden");
+          closeIcon.classList.remove("hidden");
+        } else {
+          // Close menu (Slide out)
+          mobileSidebar.classList.add("translate-x-full");
+          sidebarOverlay.classList.add("hidden"); // HIDE OVERLAY
+          hamburgerIcon.classList.remove("hidden");
+          closeIcon.classList.add("hidden");
+        }
+      };
+
+      // Toggle Mobile Sidebar when button is clicked
+      menuToggleButton.addEventListener("click", () => {
+        toggleSidebar();
+      });
+
+      // NEW: Close sidebar when clicking on the transparent overlay
+      sidebarOverlay.addEventListener("click", () => {
+        toggleSidebar(false);
+      });
+
+      // Open Modal
+      openModalButtons.forEach((button) => {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          nameModal.classList.remove("hidden");
+          nameModal.classList.add("flex");
+
+          // Close mobile menu if it's open
+          toggleSidebar(false);
+        });
+      });
+
+      // Close Modal
+      closeModalButton.addEventListener("click", () => {
+        nameModal.classList.add("hidden");
+        nameModal.classList.remove("flex");
+      });
+
+      // Close modal when clicking outside
+      nameModal.addEventListener("click", (e) => {
+        if (e.target === nameModal) {
+          nameModal.classList.add("hidden");
+          nameModal.classList.remove("flex");
+        }
+      });
+
+      // --- End New Logic ---
+    </script>
+    <script>
+      // --- JAVASCRIPT LOGIC ---
+
+      // --- DOM Elements & State ---
+      const idCardContainer = document.getElementById("id-card-container");
+      const operativeNameDisplay = document.getElementById("operative-name");
+      const downloadButton = document.getElementById("download-button");
+      const nameInput = document.getElementById("name-input");
+      const fontPreloader = document.getElementById("font-preloader");
+
+      let operativeName = nameInput.value || "G*BOY";
+
+      // Target positions (in percentage of parent container height/width)
+      const NAME_TOP_PERCENT = 56.5;
+      const CENTER_LEFT_PERCENT = 50;
+
+      // Enhanced font size configuration for different screen sizes
+      const FONT_CONFIG = {
+        mobile: { minRem: 1.2, maxRem: 3.0 }, // ~25px - ~42px
+        tablet: { minRem: 2.0, maxRem: 3.5 }, // ~32px - ~56px
+        desktop: { minRem: 2.5, maxRem: 4.5 }, // ~45px - ~81px
+      };
+
+      // Get current screen size
+      function getScreenSize() {
+        const width = window.innerWidth;
+        if (width < 640) return "mobile";
+        if (width < 1024) return "tablet";
+        return "desktop";
+      }
+
+      // Function to ensure font is loaded
+      const ensureFontLoaded = () => {
+        return new Promise((resolve) => {
+          // Check if font is already loaded
+          if (document.fonts.check('12px "SNEEB FONT"')) {
+            resolve();
+            return;
+          }
+
+          // Force load the font
+          const fontLoader = new FontFace(
+            "SNEEB FONT",
+            'url("Urban Heroes.ttf")'
+          );
+
+          fontLoader
+            .load()
+            .then((loadedFont) => {
+              document.fonts.add(loadedFont);
+              // Update preloader
+              fontPreloader.style.fontFamily = '"SNEEB FONT"';
+              fontPreloader.textContent = "G*BOY";
+
+              // Wait a bit to ensure font is ready
+              setTimeout(resolve, 300);
+            })
+            .catch(() => {
+              // Fallback if font loading fails
+              console.warn("Font loading failed, using fallback");
+              resolve();
+            });
+        });
+      };
+
+      const calculateAndApplyFontSize = (name) => {
+        // 1. Get the current root font size for conversion
+        const rootFontSize = parseFloat(
+          getComputedStyle(document.documentElement).fontSize
+        );
+
+        // 2. Get screen size configuration
+        const screenSize = getScreenSize();
+        const fontConfig = FONT_CONFIG[screenSize];
+
+        // Convert REM to pixels for calculation
+        const minFontSizePx = fontConfig.minRem * rootFontSize;
+        const maxFontSizePx = fontConfig.maxRem * rootFontSize;
+
+        // 3. Set the text content
+        operativeNameDisplay.textContent = name.toUpperCase();
+
+        // 4. Get the actual width of the container
+        const cardWidth = idCardContainer.clientWidth;
+        if (!cardWidth) return;
+
+        // 5. Define the maximum allowed width for the text block (90% of cardWidth)
+        const targetWidthRatio = 0.9;
+        const targetWidth = cardWidth * targetWidthRatio;
+
+        // --- Font Resizing Logic ---
+        let fontSizePx = maxFontSizePx;
+        let topPercent = NAME_TOP_PERCENT;
+
+        // Set the initial size for the first measurement
+        operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+        // 6. Shrink font if text is too wide, but not below minimum
+        while (
+          operativeNameDisplay.scrollWidth > targetWidth &&
+          fontSizePx > minFontSizePx
+        ) {
+          fontSizePx -= 0.5; // Smaller decrement for finer control
+          // Slightly adjust vertical position for smaller fonts
+          topPercent += 0.05;
+          operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+        }
+
+        // 7. If we hit the minimum size and still too wide, enable overflow handling
+        if (operativeNameDisplay.scrollWidth > targetWidth) {
+          operativeNameDisplay.style.overflow = "visible";
+          operativeNameDisplay.style.textOverflow = "clip";
+        } else {
+          operativeNameDisplay.style.overflow = "hidden";
+          operativeNameDisplay.style.textOverflow = "ellipsis";
+        }
+
+        // 8. Convert to REM for responsiveness
+        const finalFontSizeRem = fontSizePx / rootFontSize;
+        operativeNameDisplay.style.fontSize = `${finalFontSizeRem}rem`;
+
+        // 9. Apply dynamic positioning
+        operativeNameDisplay.style.position = "absolute";
+        operativeNameDisplay.style.top = `${topPercent}%`;
+        operativeNameDisplay.style.left = `${CENTER_LEFT_PERCENT}%`;
+        operativeNameDisplay.style.transform = "translateX(-50%)";
+
+        // Force reflow
+        operativeNameDisplay.offsetHeight;
+      };
+
+      const updateCard = () => {
+        operativeName = nameInput.value.trim() || "G*BOY";
+
+        // Ensure font is loaded before calculating
+        ensureFontLoaded().then(() => {
+          calculateAndApplyFontSize(operativeName);
+        });
+      };
+
+      const handleDownload = () => {
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Rendering...";
+
+        operativeName = nameInput.value.trim() || "G*BOY";
+
+        // Ensure font is fully loaded
+        ensureFontLoaded()
+          .then(() => {
+            // First update the card display
+            calculateAndApplyFontSize(operativeName);
+
+            // Save original styles
+            const originalStyles = {
+              fontSize: operativeNameDisplay.style.fontSize,
+              top: operativeNameDisplay.style.top,
+              left: operativeNameDisplay.style.left,
+              transform: operativeNameDisplay.style.transform,
+              position: operativeNameDisplay.style.position,
+              padding: operativeNameDisplay.style.padding,
+              margin: operativeNameDisplay.style.margin,
+              lineHeight: operativeNameDisplay.style.lineHeight,
+              overflow: operativeNameDisplay.style.overflow,
+              textOverflow: operativeNameDisplay.style.textOverflow,
+              textWrap: operativeNameDisplay.style.textWrap,
+            };
+
+            // Remove padding and margin for clean capture
+            operativeNameDisplay.style.padding = "0";
+            operativeNameDisplay.style.margin = "0";
+            operativeNameDisplay.style.lineHeight = "1";
+
+            // Force reflow
+            operativeNameDisplay.offsetHeight;
+            const tempContainer = document.createElement("div");
+
+            // Add font-face to document head
+            const fontStyle = document.createElement("style");
+            fontStyle.textContent = `
+              @font-face {
+                font-family: "SNEEB FONT";
+                src: url("Urban Heroes.ttf") format("truetype");
+                font-weight: normal;
+                font-style: normal;
+              }
+            `;
+
+            // Wait for everything to render
+            setTimeout(() => {
+              // Get the image source
+              const img = document.getElementById("id-card-image");
+              const imgSrc = img.src;
+
+              // Get computed styles
+              const fontSize = operativeNameDisplay.style.fontSize;
+              const top = operativeNameDisplay.style.top;
+              const left = operativeNameDisplay.style.left;
+              const transform = operativeNameDisplay.style.transform;
+              const overflow = operativeNameDisplay.style.overflow;
+              const textOverflow = operativeNameDisplay.style.textOverflow;
+              const textWrap = "auto";
+
+              // Create a temporary container with simple structure
+              tempContainer.style.position = "fixed";
+              tempContainer.style.left = "0";
+              tempContainer.style.top = "0";
+              tempContainer.style.width = idCardContainer.offsetWidth + "px";
+              tempContainer.style.height = idCardContainer.offsetHeight + "px";
+              tempContainer.style.zIndex = "99999";
+              tempContainer.style.opacity = "0.01";
+
+              // Create the HTML structure with all styles inline
+              tempContainer.innerHTML = `
+        <div id="temp-card" style="
+          position: relative; 
+          width: 100%; 
+          height: 100%; 
+          font-family: 'SNEEB FONT', cursive;
+        ">
+          <img 
+            src="${imgSrc}" 
+            crossorigin="anonymous" 
+            style="
+              width: 100%; 
+              height: auto; 
+              display: block;
+            "
+          >
+          <div id="temp-name" style="
+            position: absolute;
+            top: ${top};
+            left: ${left};
+            transform: ${transform};
+            width: 90%;
+            text-align: center;
+            font-family: 'SNEEB FONT', cursive;
+            font-weight: bold;
+            font-size: ${fontSize};
+            color: #000000;
+            white-space: nowrap;
+            overflow: ${overflow};
+            text-overflow: ${textOverflow};
+            text-wrap: ${textWrap};
+            letter-spacing: 0.3rem;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            z-index: 21;
+            text-shadow: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          ">${operativeName.toUpperCase()}</div>
+        </div>
+      `;
+
+              document.body.appendChild(tempContainer);
+
+              document.head.appendChild(fontStyle);
+
+              // Wait for the font to apply
+              setTimeout(() => {
+                // Get the temp card element
+                const tempCard = tempContainer.querySelector("#temp-card");
+
+                if (!tempCard) {
+                  console.error("Temp card not found");
+                  cleanup();
+                  downloadButton.textContent = "Error: Element not found";
+                  downloadButton.disabled = false;
+                  return;
+                }
+
+                // Use html2canvas with minimal configuration
+                html2canvas(tempCard, {
+                  scale: 3,
+                  useCORS: true,
+                  allowTaint: false,
+                  backgroundColor: null,
+                  logging: true,
+                })
+                  .then((canvas) => {
+                    // Convert canvas to image
+                    const image = canvas.toDataURL("image/png");
+
+                    // Create download link
+                    const a = document.createElement("a");
+                    a.href = image;
+                    a.download = `G-BOY_${operativeName.toUpperCase()}_CARD.png`;
+
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    cleanup();
+
+                    // Reset download button
+                    downloadButton.textContent = "📥 DOWNLOAD CUSTOM CARD";
+                    downloadButton.disabled = false;
+                  })
+                  .catch((error) => {
+                    console.error("Canvas error:", error);
+                    cleanup();
+                    downloadButton.textContent = "Download Failed!";
+                    downloadButton.disabled = false;
+                    alert("Error creating image. Please try again.");
+                  });
+              }, 500);
+            }, 200);
+
+            // Cleanup function
+            function cleanup() {
+              // Remove temp container if it exists
+              if (tempContainer && tempContainer.parentNode) {
+                document.body.removeChild(tempContainer);
+              }
+
+              // Remove font style if it exists
+              if (fontStyle && fontStyle.parentNode) {
+                document.head.removeChild(fontStyle);
+              }
+
+              // Restore original styles
+              Object.keys(originalStyles).forEach((property) => {
+                operativeNameDisplay.style[property] = originalStyles[property];
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Font load error:", error);
+            downloadButton.textContent = "Font Load Error!";
+            downloadButton.disabled = false;
+          });
+      };
+
+      // --- Event Handlers ---
+
+      // Name input handler
+      nameInput.addEventListener("input", updateCard);
+
+      // Download handler
+      downloadButton.addEventListener("click", handleDownload);
+
+      // Recalculate size on window resize
+      window.addEventListener("resize", updateCard);
+
+      // Initialize
+      window.addEventListener("load", () => {
+        // Preload font on page load
+        ensureFontLoaded().then(() => {
+          updateCard();
+        });
+      });
+    </script>
+  </body>
+</html>
