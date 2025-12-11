@@ -363,6 +363,14 @@
         }
       });
 
+      // hide button if url is current
+      const currentUrl = window.location.href;
+      document.querySelectorAll("#floating-menu a").forEach((link) => {
+        if (link.href === currentUrl) {
+          link.style.display = "none";
+        }
+      });
+
       // --- End New Logic ---
     </script>
     <script>
