@@ -80,7 +80,8 @@
 
       /* Style for the dynamically sized custom name */
       #operative-name {
-        width: 90%;
+        /* width: 90%; */
+        width: 95%;
         text-align: center;
         font-family: "SNEEB FONT", cursive;
         font-weight: bold;
@@ -99,6 +100,7 @@
         align-items: center;
         justify-content: center;
         text-wrap: auto;
+        padding-bottom: 150px;
       }
 
       /* Container adjustments */
@@ -379,7 +381,7 @@
       const FONT_CONFIG = {
         mobile: { minRem: 1.2, maxRem: 3.0 }, // ~25px - ~42px
         tablet: { minRem: 2.0, maxRem: 3.5 }, // ~32px - ~56px
-        desktop: { minRem: 2.5, maxRem: 4.5 }, // ~45px - ~81px
+        desktop: { minRem: 1.5, maxRem: 2.5 }, // ~45px - ~81px
       };
 
       // Get current screen size
@@ -446,7 +448,10 @@
         if (!cardWidth) return;
 
         // 5. Define the maximum allowed width for the text block (90% of cardWidth)
-        const targetWidthRatio = 0.9;
+        // const targetWidthRatio = 0.9;
+        // const targetWidth = cardWidth * targetWidthRatio;
+
+        const targetWidthRatio = 0.95; // Changed from 0.90 to 0.95
         const targetWidth = cardWidth * targetWidthRatio;
 
         // --- Font Resizing Logic ---
@@ -607,6 +612,7 @@
             margin: 0;
             line-height: 1;
             z-index: 21;
+            padding-bottom: 150px;
             text-shadow: none;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
