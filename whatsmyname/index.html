@@ -374,7 +374,7 @@
       let operativeName = nameInput.value || "G*BOY";
 
       // Target positions (in percentage of parent container height/width)
-      const NAME_TOP_PERCENT = 56.5;
+      const NAME_TOP_PERCENT = 60.5;
       const CENTER_LEFT_PERCENT = 50;
 
       // Enhanced font size configuration for different screen sizes
@@ -559,7 +559,7 @@
 
               // Get computed styles
               const fontSize = operativeNameDisplay.style.fontSize;
-              const top = operativeNameDisplay.style.top;
+              const top = parseFloat(operativeNameDisplay.style.top) - 4 + "%";
               const left = operativeNameDisplay.style.left;
               const transform = operativeNameDisplay.style.transform;
               const overflow = operativeNameDisplay.style.overflow;
