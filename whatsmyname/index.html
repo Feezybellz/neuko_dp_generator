@@ -380,12 +380,13 @@
       // Target positions (in percentage of parent container height/width)
       const NAME_TOP_PERCENT = 60.5;
       const CENTER_LEFT_PERCENT = 50;
+      const MAX_CHARS_FOR_FULL_SIZE = 6;
 
       // Enhanced font size configuration for different screen sizes
       const FONT_CONFIG = {
-        mobile: { minRem: 2.3, maxRem: 3.5 }, // ~25px - ~42px
+        mobile: { minRem: 2.5, maxRem: 3.5 }, // ~25px - ~42px
         tablet: { minRem: 2.0, maxRem: 3.5 }, // ~32px - ~56px
-        desktop: { minRem: 1.5, maxRem: 2.5 }, // ~45px - ~81px
+        desktop: { minRem: 1.5, maxRem: 4.5 }, // ~45px - ~81px
       };
 
       // Get current screen size
@@ -430,6 +431,86 @@
         });
       };
 
+      // const calculateAndApplyFontSize = (name) => {
+      //   // 1. Get the current root font size for conversion
+      //   const rootFontSize = parseFloat(
+      //     getComputedStyle(document.documentElement).fontSize
+      //   );
+
+      //   // 2. Get screen size configuration
+      //   const screenSize = getScreenSize();
+      //   const fontConfig = FONT_CONFIG[screenSize];
+
+      //   // Convert REM to pixels for calculation
+      //   const minFontSizePx = fontConfig.minRem * rootFontSize;
+      //   const maxFontSizePx = fontConfig.maxRem * rootFontSize;
+
+      //   // 3. Set the text content
+      //   operativeNameDisplay.textContent = name.toUpperCase();
+
+      //   // 4. Get the actual width of the container
+      //   const cardWidth = idCardContainer.clientWidth;
+      //   if (!cardWidth) return;
+
+      //   // 5. Define the maximum allowed width for the text block (90% of cardWidth)
+      //   // const targetWidthRatio = 0.9;
+      //   // const targetWidth = cardWidth * targetWidthRatio;
+
+      //   const targetWidthRatio = 0.95; // Changed from 0.90 to 0.95
+      //   const targetWidth = cardWidth * targetWidthRatio;
+
+      //   // --- Font Resizing Logic ---
+      //   let fontSizePx = maxFontSizePx;
+      //   let topPercent = NAME_TOP_PERCENT;
+      //   let renderedWidth = operativeNameDisplay.scrollWidth;
+
+      //   // Set the initial size for the first measurement
+      //   operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+      //   // 6. Shrink font if text is too wide, but not below minimum
+      //   console.log({
+      //     operativeNameDisplayWidth: operativeNameDisplay.scrollWidth,
+      //     targetWidth: targetWidth,
+      //     initialFontSizePx: fontSizePx,
+      //     minFontSizePx: minFontSizePx,
+      //   });
+
+      //   while (
+      //     (renderedWidth > targetWidth && fontSizePx > minFontSizePx) ||
+      //     (operativeNameDisplay.textContent.length > MAX_CHARS_FOR_FULL_SIZE &&
+      //       fontSizePx > minFontSizePx)
+      //   ) {
+      //     fontSizePx -= 0.5; // Smaller decrement for finer control
+      //     topPercent += 0.05;
+      //     operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+      //     // Force reflow/re-render before re-measuring width
+      //     operativeNameDisplay.offsetHeight;
+      //     renderedWidth = operativeNameDisplay.scrollWidth;
+      //   }
+
+      //   if (renderedWidth > targetWidth) {
+      //     operativeNameDisplay.style.overflow = "visible";
+      //     operativeNameDisplay.style.textOverflow = "clip";
+      //   } else {
+      //     operativeNameDisplay.style.overflow = "hidden";
+      //     operativeNameDisplay.style.textOverflow = "ellipsis";
+      //   }
+
+      //   // 8. Convert to REM for responsiveness
+      //   const finalFontSizeRem = fontSizePx / rootFontSize;
+      //   operativeNameDisplay.style.fontSize = `${finalFontSizeRem}rem`;
+
+      //   // 9. Apply dynamic positioning
+      //   operativeNameDisplay.style.position = "absolute";
+      //   operativeNameDisplay.style.top = `${topPercent}%`;
+      //   operativeNameDisplay.style.left = `${CENTER_LEFT_PERCENT}%`;
+      //   operativeNameDisplay.style.transform = "translateX(-50%)";
+
+      //   // Force reflow
+      //   operativeNameDisplay.offsetHeight;
+      // };
+
       const calculateAndApplyFontSize = (name) => {
         // 1. Get the current root font size for conversion
         const rootFontSize = parseFloat(
@@ -447,45 +528,71 @@
         // 3. Set the text content
         operativeNameDisplay.textContent = name.toUpperCase();
 
-        // 4. Get the actual width of the container
+        // 4. Get the actual width of the card container
         const cardWidth = idCardContainer.clientWidth;
         if (!cardWidth) return;
 
-        // 5. Define the maximum allowed width for the text block (90% of cardWidth)
-        // const targetWidthRatio = 0.9;
-        // const targetWidth = cardWidth * targetWidthRatio;
-
-        const targetWidthRatio = 0.95; // Changed from 0.90 to 0.95
+        // 5. Define the maximum allowed width for the text block (95% of cardWidth)
+        const targetWidthRatio = 0.95;
         const targetWidth = cardWidth * targetWidthRatio;
 
-        // --- Font Resizing Logic ---
+        // 6. Font Resizing Logic: Prepare for measurement and then shrink
+
         let fontSizePx = maxFontSizePx;
         let topPercent = NAME_TOP_PERCENT;
 
-        // Set the initial size for the first measurement
+        // --- 6a. TEMPORARILY RELEASE CONSTRAINTS FOR ACCURATE MEASUREMENT ---
+
+        // Save original styles that affect width measurement
+        const originalWidth = operativeNameDisplay.style.width;
+        const originalWhiteSpace = operativeNameDisplay.style.whiteSpace;
+        const originalOverflow = operativeNameDisplay.style.overflow;
+
+        // Allow the element to measure its true width without wrapping or clipping
+        operativeNameDisplay.style.width = "auto";
+        operativeNameDisplay.style.whiteSpace = "nowrap"; // Important to prevent wrapping
+        operativeNameDisplay.style.overflow = "visible";
+
+        // Set the initial max size for the first measurement
         operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
 
-        // 6. Shrink font if text is too wide, but not below minimum
-        while (
-          operativeNameDisplay.scrollWidth > targetWidth &&
-          fontSizePx > minFontSizePx
-        ) {
+        // Force a browser reflow/re-render to ensure the custom font width is calculated
+        operativeNameDisplay.offsetHeight;
+
+        let renderedWidth = operativeNameDisplay.scrollWidth;
+
+        // --- 6b. SHRINK LOOP ---
+
+        // Shrink the font size as long as the rendered text width exceeds the target width
+        // AND the font size is above the minimum allowed size.
+        while (renderedWidth > targetWidth && fontSizePx > minFontSizePx) {
           fontSizePx -= 0.5; // Smaller decrement for finer control
-          // Slightly adjust vertical position for smaller fonts
           topPercent += 0.05;
           operativeNameDisplay.style.fontSize = `${fontSizePx}px`;
+
+          // Re-measure after size change
+          operativeNameDisplay.offsetHeight;
+          renderedWidth = operativeNameDisplay.scrollWidth;
         }
 
-        // 7. If we hit the minimum size and still too wide, enable overflow handling
-        if (operativeNameDisplay.scrollWidth > targetWidth) {
-          operativeNameDisplay.style.overflow = "visible";
+        // --- 6c. APPLY FINAL STYLES AND RESTORE CONSTRAINTS ---
+
+        // 7. Restore the intended display constraints on the name container
+        operativeNameDisplay.style.width = "95%"; // Restore the 95% width constraint
+        operativeNameDisplay.style.whiteSpace = originalWhiteSpace;
+        operativeNameDisplay.style.overflow = originalOverflow;
+
+        // Check final fit for overflow handling (using the current scrollWidth of the 95% wide box)
+        if (renderedWidth > targetWidth) {
+          // If it still doesn't fit after shrinking, allow clipping
+          operativeNameDisplay.style.overflow = "hidden";
           operativeNameDisplay.style.textOverflow = "clip";
         } else {
           operativeNameDisplay.style.overflow = "hidden";
           operativeNameDisplay.style.textOverflow = "ellipsis";
         }
 
-        // 8. Convert to REM for responsiveness
+        // 8. Convert the final font size back to REM for responsiveness
         const finalFontSizeRem = fontSizePx / rootFontSize;
         operativeNameDisplay.style.fontSize = `${finalFontSizeRem}rem`;
 
