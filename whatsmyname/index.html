@@ -383,10 +383,20 @@
       const MAX_CHARS_FOR_FULL_SIZE = 6;
 
       // Enhanced font size configuration for different screen sizes
+      // const FONT_CONFIG = {
+      //   mobile: { minRem: 2.5, maxRem: 3.5 }, // ~25px - ~42px
+      //   tablet: { minRem: 2.0, maxRem: 3.5 }, // ~32px - ~56px
+      //   desktop: { minRem: 1.5, maxRem: 4.5 }, // ~45px - ~81px
+      // };
+
+      // Enhanced font size configuration for different screen sizes
       const FONT_CONFIG = {
-        mobile: { minRem: 2.5, maxRem: 3.5 }, // ~25px - ~42px
-        tablet: { minRem: 2.0, maxRem: 3.5 }, // ~32px - ~56px
-        desktop: { minRem: 1.5, maxRem: 4.5 }, // ~45px - ~81px
+        // Increased minimum and maximum REM values for mobile
+        mobile: { minRem: 3.5, maxRem: 5.5 }, // Increased from 2.5/3.5 to 3.5/5.5
+
+        // Kept tablet and desktop sizes the same
+        tablet: { minRem: 2.0, maxRem: 3.5 },
+        desktop: { minRem: 1.5, maxRem: 4.5 },
       };
 
       // Get current screen size
